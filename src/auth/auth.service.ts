@@ -7,15 +7,15 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/entity/user.entity';
+import { UserEntity } from 'src/users/entity/user.entity';
 import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepo: Repository<User>,
+    @InjectRepository(UserEntity)
+    private readonly userRepo: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -44,22 +44,24 @@ export class AuthService {
 
   // 로그인
   async signin(dto: SigninDto) {
-    const user = await this.userRepo.findOne({
-      where: { email: dto.email },
-    });
+    const user = await this.userRepo.findOne({ where: { email: dto.email } });
+
+    if (!user) {
+      throw new UnauthorizedException(
+        '이메일 또는 비밀번호가 일치하지 않습니다.',
+      );
+    }
+
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
-    if (!user || !isPasswordValid) {
+    if (!isPasswordValid) {
       throw new UnauthorizedException(
         '이메일 또는 비밀번호가 일치하지 않습니다.',
       );
     }
 
     const payload = { sub: user.id, email: user.email };
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '7d',
-    });
-
-    return { accessToken: accessToken, message: '로그인이 완료되었습니다.' };
+    return { accessToken, message: '로그인이 완료되었습니다.' };
   }
 }

@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './users/user.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 @Module({
   imports: [
@@ -29,8 +30,23 @@ import { UserModule } from './users/user.module';
         autoLoadEntities: true,
       }),
     }),
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'single',
+        options: {
+          host: config.get<string>('REDIS_HOST'),
+          port: config.get<number>('REDIS_PORT'),
+          username: config.get<string>('REDIS_USERNAME'),
+          password: config.get<string>('REDIS_PASSWORD'),
+          tls: {}, // 빈 객체라도 넣어야 rediss:// (보안 연결)로 동작함
+        },
+      }),
+    }),
     AuthModule,
     UserModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
