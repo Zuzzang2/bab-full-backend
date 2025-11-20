@@ -24,12 +24,12 @@ import { RestaurantService } from './restaurants/service/restaurant.service';
           config.get('DB_SSL') === 'true'
             ? { rejectUnauthorized: false }
             : false,
-        synchronize: false, // 개발할 땐 true
+        synchronize: true, // 개발할 땐 true
         autoLoadEntities: true,
       }),
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, RestaurantService],
+  providers: [AppService],
 })
 export class AppModule {}
