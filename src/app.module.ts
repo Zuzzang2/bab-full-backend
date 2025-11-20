@@ -5,6 +5,8 @@ import { RestaurantModule } from './restaurants/restaurants.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RestaurantService } from './restaurants/service/restaurant.service';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { RestaurantService } from './restaurants/service/restaurant.service';
         autoLoadEntities: true,
       }),
     }),
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
