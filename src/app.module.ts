@@ -4,9 +4,8 @@ import { AppService } from './app.service';
 import { RestaurantModule } from './restaurants/restaurants.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RestaurantService } from './restaurants/service/restaurant.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { UserModule } from './users/user.module';
 
 @Module({
   imports: [
@@ -31,7 +30,7 @@ import { UsersModule } from './users/users.module';
       }),
     }),
     AuthModule,
-    UsersModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
